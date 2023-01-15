@@ -1,0 +1,1 @@
+# isaac-mod-seed-effects
