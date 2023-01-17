@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Seed Effects</name>
+    <directory>seed effects</directory>
+    <id>2919325888</id>
+    <description>I was going to call this &quot;Easter Eggs&quot;, but another mod already took that name. The in-game menu calls these easter eggs. The API calls them seed effects.
+
+This mod integrates with Mod Config Menu to provide provide a seed effect manager. You can toggle [url=https://bindingofisaacrebirth.fandom.com/wiki/Seeds#Special_Seeds]special seeds[/url] in the middle of your run instead of being forced to set them beforehand.
+
+Not all of these work out-of-the-box, so I've added some extra code to get them working in a toggleable manner. If you notice any that aren't working right away, try walking into the next room or quitting and continuing to see if that resolves your issue.
+
+Here's a few that I'll call out:
+[list]
+    [*]Cathode rays! : Enabling this option during your run can crash the game. Generally, as long as you enable this prior to your run, you'll be fine to toggle it later on, but that doesn't seem to be 100% true.
+    [*]G Fuel! : If you start your run with this disabled, and then enable it later on, the item pedestal will still spawn in the first room of each floor, but it will give you a random item instead. Hold R to restart in that case.
+    [*]Inescapable Labyrinth / Escape the Labyrinth / Total curse Immunity : If the floor's XL state is toggled then the floor will be reseeded. It doesn't make any sense to flip the bit without regenerating the floor's layout.
+    [*]Point of no return / Incurable Blindness / Horrible Curse / Heal the Blind / Total curse Immunity : In certain cases, the room will be reloaded to sync game state.
+[/list]
+
+Debug console:
+[list]
+    [*]seed-effects-disable-all
+    [list]
+        [*]This allows you to disable all seed effects via the debug console.
+        [*]Bringing up the debug console pauses the game (unlike MCM) which might be useful for some of the seed effects that damage you.
+    [/list]
+[/list]</description>
+    <version>1.1</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Tweaks"/>
+</metadata>
