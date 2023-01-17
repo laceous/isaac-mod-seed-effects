@@ -22,7 +22,7 @@ Debug console:
     [*]seed-effects-disable-all
     [list]
         [*]This allows you to disable all seed effects via the debug console.
-        [*]Bringing up the debug console pauses the game (unlike MCM) which might be useful for some of the seed effects that damage you.
+        [*]Bringing up the debug console pauses the game (unlike MCM) which might be useful for some of the seed effects that can damage you.
     [/list]
 [/list]</description>
     <version>1.1</version>
