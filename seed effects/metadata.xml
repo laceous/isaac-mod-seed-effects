@@ -13,7 +13,7 @@ Here's a few that I'll call out:
 [list]
     [*]Cathode rays! : Enabling this option during your run can crash the game. Generally, as long as you enable this prior to your run, you'll be fine to toggle it later on, but that doesn't seem to be 100% true.
     [*]G Fuel! : If you start your run with this disabled, and then enable it later on, the item pedestal will still spawn in the first room of each floor, but it will give you a random item instead. Hold R to restart in that case.
-    [*]Inescapable Labyrinth / Escape the Labyrinth / Total curse Immunity : If the floor's XL state is toggled then the floor will be reseeded. It doesn't make any sense to flip the bit without regenerating the floor's layout.
+    [*]Inescapable Labyrinth / Escape the Labyrinth / Total curse Immunity : If the floor's XL state is toggled then the floor will be reloaded. It doesn't make any sense to flip the bit without regenerating the floor's layout.
     [*]Point of no return / Incurable Blindness / Horrible Curse / Heal the Blind / Total curse Immunity : In certain cases, the room will be reloaded to sync game state.
 [/list]
 
@@ -25,7 +25,7 @@ Debug console:
         [*]Bringing up the debug console pauses the game (unlike MCM) which might be useful for some of the seed effects that can damage you.
     [/list]
 [/list]</description>
-    <version>1.1</version>
+    <version>1.2</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>

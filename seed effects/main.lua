@@ -487,6 +487,32 @@ function mod:shouldReloadBossRoom()
   return false
 end
 
+function mod:reloadStage()
+  local level = game:GetLevel()
+  local stage = level:GetStage()
+  local stageType = level:GetStageType()
+  local stageTypeMap = {
+                         [StageType.STAGETYPE_WOTL]         = 'a',
+                         [StageType.STAGETYPE_AFTERBIRTH]   = 'b',
+                         [StageType.STAGETYPE_REPENTANCE]   = 'c',
+                         [StageType.STAGETYPE_REPENTANCE_B] = 'd'
+                       }
+  
+  local letter = stageTypeMap[stageType]
+  if letter then
+    stage = stage .. letter
+  end
+  
+  Isaac.ExecuteCommand('stage ' .. stage)
+end
+
+function mod:reloadRoom()
+  local level = game:GetLevel()
+  
+  level.LeaveDoor = DoorSlot.NO_DOOR_SLOT
+  game:ChangeRoom(level:GetCurrentRoomIndex(), -1)
+end
+
 function mod:disableAllSeedEffects()
   local level = game:GetLevel()
   local seeds = game:GetSeeds()
@@ -513,10 +539,9 @@ function mod:disableAllSeedEffects()
     local isLabyrinthAfter = mod:isCurseOfTheLabyrinth()
     
     if isLabyrinthBefore ~= isLabyrinthAfter then
-      Isaac.ExecuteCommand('reseed')
+      mod:reloadStage()
     elseif level:GetCurrentRoomIndex() >= 0 and (mod.reloadRoom or (isBlindBefore ~= isBlindAfter and mod:hasCollectible()) or (isCursedBefore ~= isCursedAfter and mod:hasPotentialCursedDoor())) then
-      level.LeaveDoor = DoorSlot.NO_DOOR_SLOT
-      game:ChangeRoom(level:GetCurrentRoomIndex(), -1)
+      mod:reloadRoom()
     end
     
     mod.reloadRoom = false
@@ -681,10 +706,9 @@ function mod:setupModConfigMenu()
               local isLabyrinthAfter = mod:isCurseOfTheLabyrinth()
               
               if isLabyrinthBefore ~= isLabyrinthAfter then
-                Isaac.ExecuteCommand('reseed')
+                mod:reloadStage()
               elseif level:GetCurrentRoomIndex() >= 0 and (mod.reloadRoom or (isBlindBefore ~= isBlindAfter and mod:hasCollectible()) or (isCursedBefore ~= isCursedAfter and mod:hasPotentialCursedDoor())) then
-                level.LeaveDoor = DoorSlot.NO_DOOR_SLOT
-                game:ChangeRoom(level:GetCurrentRoomIndex(), -1)
+                mod:reloadRoom()
               end
               
               mod.reloadRoom = false
