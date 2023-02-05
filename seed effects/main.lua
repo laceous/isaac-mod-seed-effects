@@ -298,32 +298,15 @@ mod.tempHasF2PCoins = false
 mod.onGameStartHasRun = false
 
 mod.state = {}
-mod.state.stageSeeds = {} -- per stage
 mod.state.hasF2PCoins = false -- GetPtrHash(player) is buggy on continue so making this a singular check
 
 function mod:onGameStart(isContinue)
-  local level = game:GetLevel()
-  local stage = level:GetStage()
-  local seeds = game:GetSeeds()
-  local stageSeed = seeds:GetStageSeed(stage)
-  mod:setStageSeed(stageSeed)
-  
   if mod:HasData() and isContinue then
     local _, state = pcall(json.decode, mod:LoadData())
     
     if type(state) == 'table' then
-      if type(state.stageSeeds) == 'table' then
-        -- quick check to see if this is the same run being continued
-        if state.stageSeeds[tostring(stage)] == stageSeed then
-          for k, v in pairs(state.stageSeeds) do
-            if type(k) == 'string' and math.type(v) == 'integer' then
-              mod.state.stageSeeds[k] = v
-            end
-          end
-          if type(state.hasF2PCoins) == 'boolean' then
-            mod.state.hasF2PCoins = state.hasF2PCoins
-          end
-        end
+      if type(state.hasF2PCoins) == 'boolean' then
+        mod.state.hasF2PCoins = state.hasF2PCoins
       end
     end
   end
@@ -340,9 +323,7 @@ function mod:onGameExit(shouldSave)
   if shouldSave then
     mod:SaveData(json.encode(mod.state))
     mod.state.hasF2PCoins = false
-    mod:clearStageSeeds()
   else
-    mod:clearStageSeeds()
     mod.state.hasF2PCoins = false
     mod:SaveData(json.encode(mod.state))
   end
@@ -350,13 +331,6 @@ function mod:onGameExit(shouldSave)
   mod.reloadRoom = false
   mod.tempHasF2PCoins = false
   mod.onGameStartHasRun = false
-end
-
-function mod:onNewLevel()
-  local level = game:GetLevel()
-  local seeds = game:GetSeeds()
-  local stageSeed = seeds:GetStageSeed(level:GetStage())
-  mod:setStageSeed(stageSeed)
 end
 
 -- filtered to 0-Player
@@ -574,17 +548,6 @@ function mod:isCurseOfTheLabyrinth()
   return curses & curse == curse
 end
 
-function mod:setStageSeed(seed)
-  local level = game:GetLevel()
-  mod.state.stageSeeds[tostring(level:GetStage())] = seed
-end
-
-function mod:clearStageSeeds()
-  for k, _ in pairs(mod.state.stageSeeds) do
-    mod.state.stageSeeds[k] = nil
-  end
-end
-
 function mod:tableHasValue(tbl, val)
   for _, v in ipairs(tbl) do
     if v == val then
@@ -725,7 +688,6 @@ end
 mod.numSeedEffects = mod:countSeedEffects()
 mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.onGameStart)
 mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.onGameExit)
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.onNewLevel)
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.onPlayerInit, 0) -- 0 is player, 1 is co-op baby
 mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
 
