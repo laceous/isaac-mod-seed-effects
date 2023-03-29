@@ -406,14 +406,16 @@ function mod:evalPlayerCache()
   end
 end
 
--- using sprite.Color instead of v.Color allows this to work for SEED_CAMO_ISAAC/remove
+-- sprite.Color is important to make this work for SEED_CAMO_ISAAC/remove
 function mod:removeCamo(entityType, isEnemy)
   for _, v in ipairs(Isaac.GetRoomEntities()) do
     if (not entityType and not isEnemy) or v.Type == entityType or (isEnemy and v:IsEnemy()) then
       local sprite = v:GetSprite()
-      local color = sprite.Color
-      if not (color.R == 1 and color.G == 1 and color.B == 1 and color.A == 1 and color.RO == 0 and color.GO == 0 and color.BO == 0) then
-        sprite.Color = Color(1, 1, 1, 1, 0, 0, 0)
+      local vColor = v.Color
+      local sColor = sprite.Color
+      if not (sColor.R == 1 and sColor.G == 1 and sColor.B == 1 and sColor.A == 1 and sColor.RO == vColor.RO and sColor.GO == vColor.GO and sColor.BO == vColor.BO) then
+        v.Color = Color(1, 1, 1, 1, vColor.RO, vColor.GO, vColor.BO)
+        sprite.Color = Color(1, 1, 1, 1, vColor.RO, vColor.GO, vColor.BO)
       end
     end
   end
