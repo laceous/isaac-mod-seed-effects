@@ -150,12 +150,12 @@ mod.data = {
              [SeedEffect.SEED_NO_BOSS_ROOM_EXITS]                = { name = 'Point of no return'    , info = { 'N0RE TVRN', 'In boss rooms, the room may be reloaded' },
                 add = function()
                   if mod:shouldReloadBossRoom() then
-                    mod.reloadRoom = true
+                    mod.doReloadRoom = true
                   end
                 end,
                 remove = function()
                   if mod:shouldReloadBossRoom() then
-                    mod.reloadRoom = true
+                    mod.doReloadRoom = true
                   end
                 end
              },
@@ -293,7 +293,7 @@ mod.data = {
            }
 
 mod.numSeedEffects = SeedEffect.NUM_SEEDS - 1
-mod.reloadRoom = false
+mod.doReloadRoom = false
 mod.tempHasF2PCoins = false
 mod.onGameStartHasRun = false
 
@@ -328,7 +328,7 @@ function mod:onGameExit(shouldSave)
     mod:SaveData(json.encode(mod.state))
   end
   
-  mod.reloadRoom = false
+  mod.doReloadRoom = false
   mod.tempHasF2PCoins = false
   mod.onGameStartHasRun = false
 end
@@ -516,11 +516,11 @@ function mod:disableAllSeedEffects()
     
     if isLabyrinthBefore ~= isLabyrinthAfter then
       mod:reloadStage()
-    elseif level:GetCurrentRoomIndex() >= 0 and (mod.reloadRoom or (isBlindBefore ~= isBlindAfter and mod:hasCollectible()) or (isCursedBefore ~= isCursedAfter and mod:hasPotentialCursedDoor())) then
+    elseif level:GetCurrentRoomIndex() >= 0 and (mod.doReloadRoom or (isBlindBefore ~= isBlindAfter and mod:hasCollectible()) or (isCursedBefore ~= isCursedAfter and mod:hasPotentialCursedDoor())) then
       mod:reloadRoom()
     end
     
-    mod.reloadRoom = false
+    mod.doReloadRoom = false
   end
   
   return seedEffectCount
@@ -672,11 +672,11 @@ function mod:setupModConfigMenu()
               
               if isLabyrinthBefore ~= isLabyrinthAfter then
                 mod:reloadStage()
-              elseif level:GetCurrentRoomIndex() >= 0 and (mod.reloadRoom or (isBlindBefore ~= isBlindAfter and mod:hasCollectible()) or (isCursedBefore ~= isCursedAfter and mod:hasPotentialCursedDoor())) then
+              elseif level:GetCurrentRoomIndex() >= 0 and (mod.doReloadRoom or (isBlindBefore ~= isBlindAfter and mod:hasCollectible()) or (isCursedBefore ~= isCursedAfter and mod:hasPotentialCursedDoor())) then
                 mod:reloadRoom()
               end
               
-              mod.reloadRoom = false
+              mod.doReloadRoom = false
             end,
             Info = mod.data[w].info
           }
