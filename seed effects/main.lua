@@ -351,9 +351,19 @@ function mod:onExecuteCmd(cmd, parameters)
   cmd = string.lower(cmd)
   
   if cmd == 'seed-effects-disable-all' then
-    local count = mod:disableAllSeedEffects()
-    print('Seed effects disabled: ' .. count)
+    if mod:isInGame() then
+      local count = mod:disableAllSeedEffects()
+      print('Seed effects disabled: ' .. count)
+    end
   end
+end
+
+function mod:isInGame()
+  if REPENTOGON then
+    return Isaac.IsInGame()
+  end
+  
+  return true
 end
 
 -- some seed effects aren't available/implemented
@@ -695,4 +705,12 @@ mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
 
 if ModConfigMenu then
   mod:setupModConfigMenu()
+end
+
+if REPENTOGON then
+  function mod:registerCommands()
+    Console.RegisterCommand('seed-effects-disable-all', 'Disable all seed effects (easter eggs)', 'Disable all seed effects (easter eggs)', false, AutocompleteType.NONE)
+  end
+  
+  mod:registerCommands()
 end
