@@ -132,6 +132,8 @@ mod.order = {
               }
             }
 
+-- names can be translated in repentogon with: Isaac.GetString('SeedMenu', '#SEED_XX'), see seedmenu.xml
+-- mcm doesn't have very good language support, we'd need to switch to imgui
 mod.data = {
              [SeedEffect.SEED_INFINITE_BASEMENT]                 = { name = 'Infinite Basements'    , info = { 'BASE MENT', 'Disables achievements' } },
              [SeedEffect.SEED_PICKUPS_SLIDE]                     = { name = 'Tricky pickups'        , info = { 'KEEP AWAY', 'Disables achievements' } },
@@ -298,7 +300,7 @@ mod.tempHasF2PCoins = false
 mod.onGameStartHasRun = false
 
 mod.state = {}
-mod.state.hasF2PCoins = false -- GetPtrHash(player) is buggy on continue so making this a singular check
+mod.state.hasF2PCoins = false -- GetPtrHash(player) doesn't work on continue so making this a singular check
 
 function mod:onGameStart(isContinue)
   if mod:HasData() and isContinue then
@@ -473,23 +475,46 @@ function mod:shouldReloadBossRoom()
   return false
 end
 
-function mod:reloadStage()
+function mod:getStageApiBaseStage(name)
   local level = game:GetLevel()
   local stage = level:GetStage()
   local stageType = level:GetStageType()
-  local stageTypeMap = {
-                         [StageType.STAGETYPE_WOTL]         = 'a',
-                         [StageType.STAGETYPE_AFTERBIRTH]   = 'b',
-                         [StageType.STAGETYPE_REPENTANCE]   = 'c',
-                         [StageType.STAGETYPE_REPENTANCE_B] = 'd'
-                       }
   
-  local letter = stageTypeMap[stageType]
-  if letter then
-    stage = stage .. letter
+  for n, v in pairs(StageAPI.CustomStages) do
+    if n ~= name and
+       v.XLStage and v.XLStage.Name and v.XLStage.Name == name and
+       v.Replaces and v.Replaces.OverrideStage == stage and v.Replaces.OverrideStageType == stageType
+    then
+      return v
+    end
   end
   
-  Isaac.ExecuteCommand('stage ' .. stage)
+  return nil
+end
+
+function mod:reloadStage()
+  if StageAPI and StageAPI.Loaded and StageAPI.CurrentStage and StageAPI.CurrentStage.Name and not StageAPI.CurrentStage.NormalStage then
+    -- if xl stage
+    local currentStage = mod:getStageApiBaseStage(StageAPI.CurrentStage.Name) or StageAPI.CurrentStage
+    StageAPI.GotoCustomStage(currentStage, false, true)
+  else
+    local level = game:GetLevel()
+    local stage = level:GetStage()
+    local stageType = level:GetStageType()
+    local stageTypeMap = {
+                           [StageType.STAGETYPE_WOTL]         = 'a',
+                           [StageType.STAGETYPE_AFTERBIRTH]   = 'b',
+                           [StageType.STAGETYPE_REPENTANCE]   = 'c',
+                           [StageType.STAGETYPE_REPENTANCE_B] = 'd'
+                         }
+    
+    local letter = stageTypeMap[stageType]
+    if letter then
+      stage = stage .. letter
+    end
+    
+    Isaac.ExecuteCommand('stage ' .. stage)
+  end
 end
 
 function mod:reloadRoom()

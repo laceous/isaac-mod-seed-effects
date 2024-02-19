@@ -25,7 +25,7 @@ Debug console:
         [*]Bringing up the debug console pauses the game (unlike MCM) which might be useful for some of the seed effects that can damage you.
     [/list]
 [/list]</description>
-    <version>1.6</version>
+    <version>1.7</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>
