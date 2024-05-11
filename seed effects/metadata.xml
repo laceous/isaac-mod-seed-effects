@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Seed Effects</name>
+    <name>Seed Effects (+Shenanigans)</name>
     <directory>seed effects</directory>
     <id>2919325888</id>
     <description>I was going to call this &quot;Easter Eggs&quot;, but another mod already took that name. The in-game menu calls these easter eggs. The API calls them seed effects.
@@ -24,8 +24,11 @@ Debug console:
         [*]This allows you to disable all seed effects via the debug console.
         [*]Bringing up the debug console pauses the game (unlike MCM) which might be useful for some of the seed effects that can damage you.
     [/list]
-[/list]</description>
-    <version>1.7</version>
+[/list]
+
+[hr][/hr]
+Update: If you have Repentogon, this is now an honorary Shenanigans mod. You can use either ImGui or Mod Config Menu to interact with this mod.</description>
+    <version>1.8</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>
