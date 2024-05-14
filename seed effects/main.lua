@@ -781,7 +781,7 @@ if REPENTOGON then
             ImGui.AddElement('shenanigansWindowSeedEffects', '', ImGuiElement.Separator, '')
           end
           
-          local chkId = 'shenanigansChkSeedEffects' .. w
+          local chkId = 'shenanigansChkSeedEffect' .. w
           local chkName = mod:localize('SeedMenu', '#SEED_' .. w)
           if not mod.data[w].achievements then
             chkName = chkName .. ' \u{f05e}'
