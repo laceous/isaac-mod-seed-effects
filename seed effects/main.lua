@@ -739,9 +739,7 @@ if REPENTOGON then
     Console.RegisterCommand('seed-effects-disable-all', 'Disable all seed effects (easter eggs)', 'Disable all seed effects (easter eggs)', false, AutocompleteType.NONE)
   end
   
-  function mod:onRender()
-    mod:RemoveCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
-    mod:RemoveCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
+  function mod:onModsLoaded()
     mod:setupImGui()
   end
   
@@ -750,10 +748,13 @@ if REPENTOGON then
     return (s == nil or s == 'StringTable::InvalidCategory' or s == 'StringTable::InvalidKey') and key or s
   end
   
-  function mod:setupImGui()
+  function mod:setupImGuiMenu()
     if not ImGui.ElementExists('shenanigansMenu') then
       ImGui.CreateMenu('shenanigansMenu', '\u{f6d1} Shenanigans')
     end
+  end
+  
+  function mod:setupImGui()
     ImGui.AddElement('shenanigansMenu', 'shenanigansMenuItemSeedEffects', ImGuiElement.MenuItem, '\u{f4d8} Seed Effect Shenanigans')
     ImGui.CreateWindow('shenanigansWindowSeedEffects', 'Seed Effect Shenanigans')
     ImGui.LinkWindowToElement('shenanigansWindowSeedEffects', 'shenanigansMenuItemSeedEffects')
@@ -805,6 +806,6 @@ if REPENTOGON then
   end
   
   mod:registerCommands()
-  mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
-  mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
+  mod:setupImGuiMenu()
+  mod:AddCallback(ModCallbacks.MC_POST_MODS_LOADED, mod.onModsLoaded)
 end
