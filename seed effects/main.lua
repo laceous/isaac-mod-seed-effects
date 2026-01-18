@@ -767,7 +767,7 @@ if REPENTOGON then
     ImGui.AddElement('shenanigansWindowSeedEffects', '', ImGuiElement.SameLine, '')
     local txtId = 'shenanigansTxtSeedEffects'
     ImGui.AddText('shenanigansWindowSeedEffects', '', false, txtId)
-    ImGui.AddCallback(txtId, ImGuiCallback.Render, function()
+    ImGui.AddCallback(txtId, ImGuiCallback.Visible, function()
       local seeds = game:GetSeeds()
       ImGui.UpdateData(txtId, ImGuiData.Label, seeds:CountSeedEffects() .. ' / ' .. mod.numSeedEffects)
     end)
@@ -791,11 +791,11 @@ if REPENTOGON then
           if mod.data[w].helpMarkerIdx then
             ImGui.SetHelpmarker(chkId, mod.data[w].info[mod.data[w].helpMarkerIdx])
           end
-          ImGui.AddCallback(chkId, ImGuiCallback.Render, function()
+          ImGui.AddCallback(chkId, ImGuiCallback.Visible, function()
             local seeds = game:GetSeeds()
             ImGui.UpdateData(chkId, ImGuiData.Value, seeds:HasSeedEffect(w))
           end)
-          ImGui.AddCallback(chkId, ImGuiCallback.Edited, function(b)
+          ImGui.AddCallback(chkId, ImGuiCallback.Edited, function()
             if mod:isInGame() then
               mod:toggleSeedEffect(w)
             end
