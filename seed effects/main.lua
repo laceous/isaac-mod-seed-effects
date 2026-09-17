@@ -747,8 +747,42 @@ if ModConfigMenu then
 end
 
 if REPENTOGON then
+  mod.rememberSeedEffects = false
+  mod.rememberedSeedEffects = nil
+  
   function mod:registerCommands()
     Console.RegisterCommand('seed-effects-disable-all', 'Disable all seed effects (easter eggs)', 'Disable all seed effects (easter eggs)', MenuManager.GetSeeds, AutocompleteType.NONE)
+  end
+  
+  function mod:onGameExitRgon()
+    if mod.rememberSeedEffects then
+      mod.rememberedSeedEffects = {}
+      
+      local seeds = game:GetSeeds()
+      for i = 0, SeedEffect.NUM_SEEDS - 1 do
+        if seeds:HasSeedEffect(i) then
+          table.insert(mod.rememberedSeedEffects, i)
+        end
+      end
+    end
+  end
+  
+  function mod:onMainMenuRender()
+    if not MenuManager.GetSeeds or
+       not mod.rememberSeedEffects or
+       not mod.rememberedSeedEffects
+    then
+      mod.rememberedSeedEffects = nil
+      return
+    end
+    
+    if MenuManager.GetActiveMenu() >= MainMenuType.GAME then -- 3
+      local seeds = MenuManager.GetSeeds()
+      for _, v in ipairs(mod.rememberedSeedEffects) do
+        seeds:AddSeedEffect(v)
+      end
+      mod.rememberedSeedEffects = nil
+    end
   end
   
   function mod:onModsLoaded()
@@ -786,6 +820,16 @@ if REPENTOGON then
       end
       ImGui.UpdateData(txtId, ImGuiData.Label, seeds:CountSeedEffects() .. ' / ' .. mod.numSeedEffects)
     end)
+    ImGui.AddElement('shenanigansWindowSeedEffects', '', ImGuiElement.SameLine, '')
+    ImGui.AddButton('shenanigansWindowSeedEffects', 'shenanigansBtnSeedEffectsEggs', '\u{f7fb}', function()
+      print(Isaac.ExecuteCommand('eggs'))
+    end, false)
+    ImGui.AddElement('shenanigansWindowSeedEffects', '', ImGuiElement.SameLine, '')
+    local chkRememberId = 'shenanigansChkSeedEffectsRemember'
+    ImGui.AddCheckbox('shenanigansWindowSeedEffects', chkRememberId, 'Remember?', function(b)
+      mod.rememberSeedEffects = b
+    end, mod.rememberSeedEffects)
+    ImGui.SetHelpmarker(chkRememberId, 'The game normally remembers seed effects between restarts as long as you don\'t exit back to the menu. Check this box to copy the seed effects from your last run back to the menu. Switching save slots will clear your selection.')
     
     -- repentogon doesn't let you dynamically grab seedmenu.xml
     for _, v in ipairs(mod.order) do
@@ -825,5 +869,7 @@ if REPENTOGON then
   
   mod:registerCommands()
   mod:setupImGuiMenu()
+  mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.onGameExitRgon)
+  mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onMainMenuRender)
   mod:AddCallback(ModCallbacks.MC_POST_MODS_LOADED, mod.onModsLoaded)
 end
