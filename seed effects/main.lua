@@ -351,7 +351,7 @@ function mod:onExecuteCmd(cmd, parameters)
   cmd = string.lower(cmd)
   
   if cmd == 'seed-effects-disable-all' then
-    if mod:isInGame() then
+    if mod:isInGame() or (REPENTOGON and MenuManager.GetSeeds) then
       local count = mod:disableAllSeedEffects()
       print('Seed effects disabled: ' .. count)
     end
@@ -523,11 +523,15 @@ function mod:reloadRoom()
 end
 
 function mod:disableAllSeedEffects()
+  local isInGame = mod:isInGame()
   local level = game:GetLevel()
   local seeds = game:GetSeeds()
-  local isBlindBefore = mod:isCurseOfTheBlind()
-  local isCursedBefore = mod:isCurseOfTheCursed()
-  local isLabyrinthBefore = mod:isCurseOfTheLabyrinth()
+  if REPENTOGON and not isInGame and MenuManager.GetSeeds then
+    seeds = MenuManager.GetSeeds()
+  end
+  local isBlindBefore = isInGame and mod:isCurseOfTheBlind()
+  local isCursedBefore = isInGame and mod:isCurseOfTheCursed()
+  local isLabyrinthBefore = isInGame and mod:isCurseOfTheLabyrinth()
   local seedEffectCount = 0
   
   -- seeds:ClearSeedEffects()
@@ -536,13 +540,13 @@ function mod:disableAllSeedEffects()
       seeds:RemoveSeedEffect(i)
       seedEffectCount = seedEffectCount + 1
       
-      if mod.data[i] and mod.data[i].remove then
+      if isInGame and mod.data[i] and mod.data[i].remove then
         mod.data[i].remove()
       end
     end
   end
   
-  if seedEffectCount > 0 then
+  if isInGame and seedEffectCount > 0 then
     local isBlindAfter = mod:isCurseOfTheBlind()
     local isCursedAfter = mod:isCurseOfTheCursed()
     local isLabyrinthAfter = mod:isCurseOfTheLabyrinth()
@@ -560,16 +564,20 @@ function mod:disableAllSeedEffects()
 end
 
 function mod:toggleSeedEffect(seedEffect)
+  local isInGame = mod:isInGame()
   local level = game:GetLevel()
   local seeds = game:GetSeeds()
-  local isBlindBefore = mod:isCurseOfTheBlind()
-  local isCursedBefore = mod:isCurseOfTheCursed()
-  local isLabyrinthBefore = mod:isCurseOfTheLabyrinth()
+  if REPENTOGON and not isInGame and MenuManager.GetSeeds then -- MenuManager.IsActive()
+    seeds = MenuManager.GetSeeds()
+  end
+  local isBlindBefore = isInGame and mod:isCurseOfTheBlind()
+  local isCursedBefore = isInGame and mod:isCurseOfTheCursed()
+  local isLabyrinthBefore = isInGame and mod:isCurseOfTheLabyrinth()
   
   if seeds:HasSeedEffect(seedEffect) then
     seeds:RemoveSeedEffect(seedEffect)
     
-    if mod.data[seedEffect].remove then
+    if isInGame and mod.data[seedEffect].remove then
       mod.data[seedEffect].remove()
     end
   else
@@ -582,32 +590,36 @@ function mod:toggleSeedEffect(seedEffect)
     
     seeds:RemoveBlockingSeedEffects(seedEffect)
     
-    for i = 0, SeedEffect.NUM_SEEDS - 1 do
-      if mod:tableHasValue(seedEffects, i) and not seeds:HasSeedEffect(i) then
-        if mod.data[i] and mod.data[i].remove then
-          mod.data[i].remove()
+    if isInGame then
+      for i = 0, SeedEffect.NUM_SEEDS - 1 do
+        if mod:tableHasValue(seedEffects, i) and not seeds:HasSeedEffect(i) then
+          if mod.data[i] and mod.data[i].remove then
+            mod.data[i].remove()
+          end
         end
       end
     end
     
     seeds:AddSeedEffect(seedEffect)
     
-    if mod.data[seedEffect].add then
+    if isInGame and mod.data[seedEffect].add then
       mod.data[seedEffect].add()
     end
   end
   
-  local isBlindAfter = mod:isCurseOfTheBlind()
-  local isCursedAfter = mod:isCurseOfTheCursed()
-  local isLabyrinthAfter = mod:isCurseOfTheLabyrinth()
-  
-  if isLabyrinthBefore ~= isLabyrinthAfter then
-    mod:reloadStage()
-  elseif level:GetCurrentRoomIndex() >= 0 and (mod.doReloadRoom or (isBlindBefore ~= isBlindAfter and mod:hasCollectible()) or (isCursedBefore ~= isCursedAfter and mod:hasPotentialCursedDoor())) then
-    mod:reloadRoom()
+  if isInGame then
+    local isBlindAfter = mod:isCurseOfTheBlind()
+    local isCursedAfter = mod:isCurseOfTheCursed()
+    local isLabyrinthAfter = mod:isCurseOfTheLabyrinth()
+    
+    if isLabyrinthBefore ~= isLabyrinthAfter then
+      mod:reloadStage()
+    elseif level:GetCurrentRoomIndex() >= 0 and (mod.doReloadRoom or (isBlindBefore ~= isBlindAfter and mod:hasCollectible()) or (isCursedBefore ~= isCursedAfter and mod:hasPotentialCursedDoor())) then
+      mod:reloadRoom()
+    end
+    
+    mod.doReloadRoom = false
   end
-  
-  mod.doReloadRoom = false
 end
 
 function mod:isCurseOfTheBlind()
@@ -736,7 +748,7 @@ end
 
 if REPENTOGON then
   function mod:registerCommands()
-    Console.RegisterCommand('seed-effects-disable-all', 'Disable all seed effects (easter eggs)', 'Disable all seed effects (easter eggs)', false, AutocompleteType.NONE)
+    Console.RegisterCommand('seed-effects-disable-all', 'Disable all seed effects (easter eggs)', 'Disable all seed effects (easter eggs)', MenuManager.GetSeeds, AutocompleteType.NONE)
   end
   
   function mod:onModsLoaded()
@@ -760,7 +772,7 @@ if REPENTOGON then
     ImGui.LinkWindowToElement('shenanigansWindowSeedEffects', 'shenanigansMenuItemSeedEffects')
     
     ImGui.AddButton('shenanigansWindowSeedEffects', 'shenanigansBtnSeedEffects', mod:localize('SeedMenu', '#SEED_RESET'), function()
-      if mod:isInGame() then
+      if mod:isInGame() or MenuManager.GetSeeds then
         mod:disableAllSeedEffects()
       end
     end, false)
@@ -769,6 +781,9 @@ if REPENTOGON then
     ImGui.AddText('shenanigansWindowSeedEffects', '', false, txtId)
     ImGui.AddCallback(txtId, ImGuiCallback.Visible, function()
       local seeds = game:GetSeeds()
+      if not mod:isInGame() and MenuManager.GetSeeds then
+        seeds = MenuManager.GetSeeds()
+      end
       ImGui.UpdateData(txtId, ImGuiData.Label, seeds:CountSeedEffects() .. ' / ' .. mod.numSeedEffects)
     end)
     
@@ -793,10 +808,13 @@ if REPENTOGON then
           end
           ImGui.AddCallback(chkId, ImGuiCallback.Visible, function()
             local seeds = game:GetSeeds()
+            if not mod:isInGame() and MenuManager.GetSeeds then
+              seeds = MenuManager.GetSeeds()
+            end
             ImGui.UpdateData(chkId, ImGuiData.Value, seeds:HasSeedEffect(w))
           end)
           ImGui.AddCallback(chkId, ImGuiCallback.Edited, function()
-            if mod:isInGame() then
+            if mod:isInGame() or MenuManager.GetSeeds then
               mod:toggleSeedEffect(w)
             end
           end)
